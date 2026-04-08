@@ -1,5 +1,5 @@
 ---
-title: Email Triage Environment
+title: Email Triage OpenEnv
 emoji: 📧
 colorFrom: blue
 colorTo: green
@@ -92,6 +92,7 @@ The agent drafts a professional reply to a work email. Scored on a 5-criterion r
 
 | Method | Path | Description |
 |---|---|---|
+| `GET` | `/` | Status check |
 | `GET` | `/health` | Liveness probe |
 | `GET` | `/state` | Current environment state |
 | `POST` | `/reset` | Reset to a task (`{"task_index": 0}`) |
@@ -122,23 +123,23 @@ uv run server
 # or
 python -m server.app
 ```
-Server starts at `http://localhost:8000`.
+Server starts at `http://localhost:7860`.
 
 ### Test with curl
 ```bash
 # Reset to classify_email task
-curl -X POST http://localhost:8000/reset -H 'Content-Type: application/json' \
+curl -X POST http://localhost:7860/reset -H 'Content-Type: application/json' \
   -d '{"task_index": 0}'
 
 # Submit a classification
-curl -X POST http://localhost:8000/step -H 'Content-Type: application/json' \
-  -d '{"action_type": "classify", "content": "spam"}'
+curl -X POST http://localhost:7860/step -H 'Content-Type: application/json' \
+  -d '{"action": {"action_type": "classify", "content": "spam"}}'
 ```
 
 ### Docker
 ```bash
-docker build -t email-triage-env:latest -f server/Dockerfile .
-docker run -p 8000:8000 email-triage-env:latest
+docker build -t email-triage-env:latest .
+docker run -p 7860:7860 email-triage-env:latest
 ```
 
 ---
@@ -146,14 +147,15 @@ docker run -p 8000:8000 email-triage-env:latest
 ## Running the Inference Script
 
 ```bash
-# Against Docker (default)
+# Against a deployed HF Space
 export HF_TOKEN=hf_...
 export MODEL_NAME=Qwen/Qwen2.5-72B-Instruct
 export API_BASE_URL=https://router.huggingface.co/v1
+export ENV_URL=https://violinadoley25-email-triage-openenv.hf.space
 python inference.py
 
-# Against a deployed HF Space
-export ENV_URL=https://your-username-email-triage-env.hf.space
+# Against local Docker
+export IMAGE_NAME=email-triage-env:latest
 python inference.py
 ```
 
@@ -187,29 +189,18 @@ Measured with `Qwen/Qwen2.5-72B-Instruct` via HuggingFace router:
 
 ---
 
-## Deploy to Hugging Face Spaces
+## Live Demo
 
-```bash
-openenv push --repo-id <your-username>/email-triage-env
-```
-
-Or manually:
-```bash
-huggingface-cli login
-git remote add hf https://huggingface.co/spaces/<your-username>/email-triage-env
-git push hf main
-```
+**HF Space:** https://huggingface.co/spaces/violinadoley25/email-triage-openenv
 
 ---
 
 ## Validation
 
 ```bash
-# Install validator dependencies
-pip install openenv-core docker
-
-# Run pre-submission validation
-./validate-submission.sh https://<your-space>.hf.space .
+pip install openenv-core
+openenv validate .
+# [OK] openenv: Ready for multi-mode deployment
 ```
 
 ---

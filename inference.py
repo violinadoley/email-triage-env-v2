@@ -38,10 +38,10 @@ from email_triage_env import EmailTriageEnv, EmailAction
 
 # ─── Configuration ────────────────────────────────────────────────────────────
 
-API_BASE_URL: str = os.getenv("API_BASE_URL") or "https://router.huggingface.co/v1"
-MODEL_NAME: str = os.getenv("MODEL_NAME") or "Qwen/Qwen2.5-72B-Instruct"
-API_KEY: str = os.getenv("HF_TOKEN") or os.getenv("API_KEY") or "no-key"
-IMAGE_NAME: str = os.getenv("IMAGE_NAME") or "email-triage-env:latest"
+API_BASE_URL: str = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
+MODEL_NAME: str = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
+HF_TOKEN: Optional[str] = os.getenv("HF_TOKEN")
+LOCAL_IMAGE_NAME: Optional[str] = os.getenv("LOCAL_IMAGE_NAME")
 ENV_URL: Optional[str] = os.getenv("ENV_URL")
 
 BENCHMARK = "email-triage-env"
@@ -64,7 +64,7 @@ _llm: Optional[OpenAI] = None
 def get_llm() -> OpenAI:
     global _llm
     if _llm is None:
-        _llm = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
+        _llm = OpenAI(base_url=API_BASE_URL, api_key=HF_TOKEN)
     return _llm
 
 
@@ -236,8 +236,8 @@ async def main() -> None:
         print(f"Connecting to environment at {ENV_URL} ...", flush=True)
         env = EmailTriageEnv(base_url=ENV_URL)
     else:
-        print(f"Starting environment from Docker image: {IMAGE_NAME} ...", flush=True)
-        env = await EmailTriageEnv.from_docker_image(IMAGE_NAME)
+        print(f"Starting environment from Docker image: {LOCAL_IMAGE_NAME} ...", flush=True)
+        env = await EmailTriageEnv.from_docker_image(LOCAL_IMAGE_NAME)
 
     all_results: List[Dict[str, Any]] = []
 
