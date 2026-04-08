@@ -1,0 +1,5 @@
+Fix: move Dockerfile to root for correct Docker build context
+
+server/Dockerfile used server/ as build context, missing pyproject.toml,
+uv.lock, and models.py needed for uv sync and server imports.
+

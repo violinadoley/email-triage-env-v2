@@ -1,0 +1,11 @@
+tree 670321557f68ff0708d0f521a64535e3f12e04fb
+parent ea05a02eaf9609887f9fc864c4a7a6e8afc4a585
+author violinadoley <violinadoley21@gmail.com> 1775644831 +0530
+committer violinadoley <violinadoley21@gmail.com> 1775644831 +0530
+
+Fix: move Dockerfile to root for correct Docker build context
+
+server/Dockerfile used server/ as build context, missing pyproject.toml,
+uv.lock, and models.py needed for uv sync and server imports.
+
+Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>

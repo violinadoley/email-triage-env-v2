@@ -1,0 +1,49 @@
+spec_version: 1
+name: email-triage-env
+type: space
+runtime: fastapi
+app: server.app:app
+port: 8000
+
+description: >
+  Real-world email triage environment where an AI agent classifies emails,
+  prioritizes an inbox by urgency, and drafts professional replies.
+  Three tasks of increasing difficulty with deterministic graders.
+
+tasks:
+  - name: classify_email
+    description: "Classify a single email into spam, work, personal, or newsletter"
+    difficulty: easy
+    action_type: classify
+    max_steps: 1
+    scoring: exact_match
+
+  - name: prioritize_inbox
+    description: "Rank 5 emails by urgency — most urgent first (Kendall-tau scoring)"
+    difficulty: medium
+    action_type: rank
+    max_steps: 1
+    scoring: kendall_tau
+
+  - name: draft_reply
+    description: "Draft a professional reply to a work email (rubric-based scoring)"
+    difficulty: hard
+    action_type: reply
+    max_steps: 1
+    scoring: rubric_based
+
+hardware:
+  min_vcpu: 2
+  min_ram_gb: 4
+
+evaluation:
+  aggregate: mean
+  primary_metric: score
+
+tags:
+  - nlp
+  - email
+  - classification
+  - ranking
+  - text-generation
+  - real-world
