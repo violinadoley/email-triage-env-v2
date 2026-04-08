@@ -1,5 +1,5 @@
 ---
-title: Email Triage OpenEnv
+title: Email Triage Environment
 emoji: 📧
 colorFrom: blue
 colorTo: green
@@ -112,8 +112,8 @@ The agent drafts a professional reply to a work email. Scored on a 5-criterion r
 
 ### Install
 ```bash
-git clone https://github.com/violinadoley/email-triage-env
-cd email-triage-env
+git clone https://github.com/violinadoley/email-triage-env-v2
+cd email-triage-env-v2
 uv sync
 ```
 
@@ -151,7 +151,7 @@ docker run -p 7860:7860 email-triage-env:latest
 export HF_TOKEN=hf_...
 export MODEL_NAME=Qwen/Qwen2.5-72B-Instruct
 export API_BASE_URL=https://router.huggingface.co/v1
-export ENV_URL=https://violinadoley25-email-triage-openenv.hf.space
+export ENV_URL=https://violinadoley25-email-triage-env.hf.space
 python inference.py
 
 # Against local Docker
@@ -191,7 +191,7 @@ Measured with `Qwen/Qwen2.5-72B-Instruct` via HuggingFace router:
 
 ## Live Demo
 
-**HF Space:** https://huggingface.co/spaces/violinadoley25/email-triage-openenv
+**HF Space:** https://huggingface.co/spaces/violinadoley25/email-triage-env
 
 ---
 
