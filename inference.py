@@ -41,8 +41,8 @@ from email_triage_env import EmailTriageEnv, EmailAction
 API_BASE_URL: str = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
 MODEL_NAME: str = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-72B-Instruct")
 HF_TOKEN: Optional[str] = os.getenv("HF_TOKEN")
-LOCAL_IMAGE_NAME: Optional[str] = os.getenv("LOCAL_IMAGE_NAME")
-ENV_URL: Optional[str] = os.getenv("ENV_URL")
+LOCAL_IMAGE_NAME: str = os.getenv("LOCAL_IMAGE_NAME", "email-triage-env:latest")
+ENV_URL: Optional[str] = os.getenv("ENV_URL") or "https://violinadoley25-email-triage-env.hf.space"
 
 BENCHMARK = "email-triage-env"
 MAX_STEPS = 3
