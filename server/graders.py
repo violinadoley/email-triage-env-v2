@@ -16,6 +16,11 @@ from typing import Any, Dict, List, Optional, Tuple
 VALID_CATEGORIES = {"spam", "work", "personal", "newsletter"}
 
 
+def _clamp(score: float) -> float:
+    """Clamp score to strictly open interval (0, 1) as required by the validator."""
+    return max(0.01, min(0.99, score))
+
+
 # ─── Task 1: classify_email (easy) ────────────────────────────────────────────
 
 def grade_classify(content: str, ground_truth: str) -> Tuple[float, float, str]:
@@ -30,18 +35,18 @@ def grade_classify(content: str, ground_truth: str) -> Tuple[float, float, str]:
                 predicted = cat
                 break
         else:
+            s = _clamp(0.0)
             return (
-                0.0, 0.0,
+                s, s,
                 f"Invalid category '{content.strip()}'. "
                 f"Must be one of: {', '.join(sorted(VALID_CATEGORIES))}."
             )
 
     if predicted == ground_truth:
-        return 1.0, 1.0, f"Correct! Email is '{ground_truth}'."
-    return (
-        0.0, 0.0,
-        f"Incorrect. Got '{predicted}', expected '{ground_truth}'."
-    )
+        s = _clamp(1.0)
+        return s, s, f"Correct! Email is '{ground_truth}'."
+    s = _clamp(0.0)
+    return s, s, f"Incorrect. Got '{predicted}', expected '{ground_truth}'."
 
 
 # ─── Task 2: prioritize_inbox (medium) ────────────────────────────────────────
@@ -85,15 +90,16 @@ def grade_prioritize(content: str, correct_ranking: List[int]) -> Tuple[float, f
 
     parsed = _parse_ranking(content, correct_ranking)
     if parsed is None:
+        s = _clamp(0.0)
         return (
-            0.0, 0.0,
+            s, s,
             f"Could not parse ranking. "
             f"Expected comma-separated IDs like '{','.join(map(str, correct_ranking))}'. "
             f"Got: '{content[:150]}'"
         )
 
     dist = _kendall_tau_distance(parsed, correct_ranking)
-    score = round(1.0 - dist / max_dist, 4)
+    score = _clamp(round(1.0 - dist / max_dist, 4))
 
     if score == 1.0:
         feedback = f"Perfect ranking! Correct: {correct_ranking}."
@@ -159,7 +165,7 @@ def grade_draft_reply(content: str, email_data: Dict[str, Any]) -> Tuple[float, 
     else:
         parts["keywords"] = 0.0
 
-    total = round(sum(parts.values()), 4)
+    total = _clamp(round(sum(parts.values()), 4))
     quality = "Excellent" if total >= 0.8 else "Good" if total >= 0.6 else "Fair" if total >= 0.4 else "Poor"
     breakdown = ", ".join(f"{k}={v:.2f}" for k, v in parts.items())
     feedback = f"{quality} reply (score={total:.2f}). {breakdown}. Words: {len(reply.split())}."
